@@ -1,0 +1,12 @@
+import { AnimatePresence, motion } from 'framer-motion'
+import { useEffect } from 'react'
+import { ExternalLink, Github, X } from 'lucide-react'
+
+export function ProjectModal({ project, onClose }) {
+  useEffect(() => { const onKeyDown = (event) => { if (event.key === 'Escape') onClose() }; if (project) window.addEventListener('keydown', onKeyDown); return () => window.removeEventListener('keydown', onKeyDown) }, [project, onClose])
+  return <AnimatePresence>{project && <motion.div className="project-modal-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={onClose} role="presentation"><motion.article className="project-modal" initial={{ opacity: 0, scale: .96, y: 18 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: .96, y: 18 }} onMouseDown={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-label={project.name}>
+    <button className="modal-close" onClick={onClose} aria-label="Close project details"><X size={20} /></button>
+    <div className={`modal-image project-visual-${project.visual}`}>{project.video ? <video src={project.video} controls playsInline preload="metadata" aria-label={`${project.name} motion graphics video`} /> : <><img src={project.image} alt={`${project.name} project preview`} onError={(event) => { event.currentTarget.style.display = 'none' }} /><div className="placeholder-ui"><span className="placeholder-brand">{project.name}</span><div className="placeholder-lines"><i /><i /><i /></div><b>{project.categoryLabel}</b></div></>}</div>
+    <div className="modal-content"><p className="project-category">{project.categoryLabel}</p><h2>{project.name}</h2><p className="modal-description">{project.description}</p><div className="modal-details"><div><span>Technology / tools</span><p>{project.technologies.join(' · ')}</p></div><div><span>Project type</span><p>{project.type}</p></div></div>{project.features.length > 0 && <div className="modal-features"><span>Main features</span><ul>{project.features.map((feature) => <li key={feature}>{feature}</li>)}</ul></div>}<div className="modal-actions">{project.github && <a href={project.github} target="_blank" rel="noreferrer" className="button">GitHub Repository <Github size={16} /></a>}{project.liveDemo && <a href={project.liveDemo} target="_blank" rel="noreferrer" className="button button-outline">Live Demo <ExternalLink size={16} /></a>}</div></div>
+  </motion.article></motion.div>}</AnimatePresence>
+}
